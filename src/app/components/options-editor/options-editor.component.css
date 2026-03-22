@@ -15,9 +15,9 @@
   width: 100%;
   min-height: 3.15rem;
   padding: 0.85rem 1rem;
-  border: 1px solid rgba(29, 29, 31, 0.1);
+  border: 1px solid #dfe1e7;
   border-radius: 1.1rem;
-  background: #fbfbfd;
+  background: #f7f8fb;
   color: #1d1d1f;
 }
 
@@ -26,20 +26,22 @@
 .add-button:focus-visible,
 .delete-button:focus-visible,
 .color-button:focus-visible {
-  outline: 3px solid rgba(52, 199, 89, 0.35);
+  outline: 3px solid rgba(142, 142, 147, 0.35);
   outline-offset: 2px;
 }
 
 .add-button {
   min-height: 3.15rem;
   padding: 0.8rem 1.2rem;
-  border: 0;
+  border: 1px solid #d8dbe2;
   border-radius: 999px;
-  background: #34c759;
-  color: white;
+  background: #eceff4;
+  color: #2c2c2e;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 14px 28px rgba(52, 199, 89, 0.24);
+  box-shadow:
+    5px 5px 12px rgba(221, 221, 228, 0.65),
+    -5px -5px 12px rgba(255, 255, 255, 0.9);
 }
 
 .add-button:disabled {
@@ -60,8 +62,8 @@
   align-items: center;
   padding: 0.75rem;
   border-radius: 1.15rem;
-  background: #ffffff;
-  border: 1px solid rgba(29, 29, 31, 0.08);
+  background: #fcfcfe;
+  border: 1px solid #e0e0e6;
 }
 
 .color-button {
@@ -78,10 +80,10 @@
   height: 2.5rem;
   display: inline-grid;
   place-items: center;
-  border: 0;
+  border: 1px solid #edd8de;
   border-radius: 999px;
-  background: #fff2f4;
-  color: #d70015;
+  background: #fceff1;
+  color: #9e5969;
   cursor: pointer;
 }
 

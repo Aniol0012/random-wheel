@@ -10,6 +10,7 @@ export type WheelSettings = {
   readonly spinDurationSeconds: number;
   readonly spinTurns: number;
   readonly removeWinner: boolean;
+  readonly showConfetti: boolean;
 };
 
 export type StoredWheelState = {
@@ -21,11 +22,9 @@ export type StoredWheelState = {
 
 export type UiTextSet = {
   readonly appName: string;
-  readonly appTagline: string;
   readonly languageLabel: string;
   readonly wheelAriaLabel: string;
   readonly wheelEmpty: string;
-  readonly wheelHint: string;
   readonly spin: string;
   readonly spinning: string;
   readonly fullscreenEnter: string;
@@ -46,6 +45,7 @@ export type UiTextSet = {
   readonly durationLabel: string;
   readonly advancedTitle: string;
   readonly removeWinner: string;
+  readonly confettiLabel: string;
   readonly cleanupHint: string;
   readonly footerCredits: string;
   readonly footerProject: string;

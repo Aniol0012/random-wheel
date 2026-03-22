@@ -12,6 +12,17 @@ type WheelSlice = {
   readonly labelRotation: number;
 };
 
+type ConfettiPiece = {
+  readonly id: string;
+  readonly color: string;
+  readonly left: string;
+  readonly size: string;
+  readonly delay: string;
+  readonly duration: string;
+  readonly drift: string;
+  readonly rotation: string;
+};
+
 @Component({
   selector: 'app-wheel-stage',
   templateUrl: './wheel-stage.component.html',
@@ -28,11 +39,11 @@ export class WheelStageComponent {
   readonly spinningLabel = input.required<string>();
   readonly emptyLabel = input.required<string>();
   readonly wheelAriaLabel = input.required<string>();
-  readonly hintText = input.required<string>();
   readonly resultText = input.required<string>();
   readonly statusText = input.required<string>();
   readonly isFullscreen = input(false);
   readonly fullscreenLabel = input.required<string>();
+  readonly confettiPieces = input<readonly ConfettiPiece[]>([]);
 
   readonly spinRequested = output<void>();
   readonly fullscreenRequested = output<void>();

@@ -1,8 +1,7 @@
-<main class="app-shell">
+<main class="app-shell" [class.is-fullscreen]="isFullscreen()">
   <header class="page-header">
     <div class="brand-copy">
       <h1>{{ texts().appName }}</h1>
-      <p>{{ texts().appTagline }}</p>
     </div>
 
     <nav class="language-switcher" [attr.aria-label]="texts().languageLabel">
@@ -32,11 +31,11 @@
         [spinningLabel]="texts().spinning"
         [emptyLabel]="texts().wheelEmpty"
         [wheelAriaLabel]="texts().wheelAriaLabel"
-        [hintText]="hintText()"
         [resultText]="resultLabel()"
         [statusText]="statusMessage()"
         [isFullscreen]="isFullscreen()"
         [fullscreenLabel]="isFullscreen() ? texts().fullscreenExit : texts().fullscreenEnter"
+        [confettiPieces]="confettiPieces()"
         (spinRequested)="spinWheel()"
         (fullscreenRequested)="toggleFullscreen()"
       />
@@ -45,10 +44,12 @@
     <div class="tools-column">
       <section class="section-block">
         <div class="section-heading">
-          <h2>{{ texts().quickSettingsTitle }}</h2>
+          <h2>{{ texts().optionsTitle }}</h2>
         </div>
 
-        <div class="setting-group">
+        <div class="options-summary">{{ optionCountLabel() }}</div>
+
+        <div class="setting-group setting-group-inline">
           <label class="setting-label" for="spin-duration">
             <span>{{ texts().durationLabel }}</span>
             <strong>{{ settings().spinDurationSeconds }}s</strong>
@@ -65,15 +66,6 @@
             (input)="updateDuration(durationInput.value)"
           />
         </div>
-      </section>
-
-      <section class="section-block">
-        <div class="section-heading">
-          <h2>{{ texts().optionsTitle }}</h2>
-          <p>{{ texts().optionsHint }}</p>
-        </div>
-
-        <div class="options-summary">{{ optionCountLabel() }}</div>
 
         <app-options-editor
           [options]="options()"
@@ -101,8 +93,10 @@
         </div>
       </section>
 
-      <details class="advanced-block">
-        <summary>{{ texts().advancedTitle }}</summary>
+      <section class="advanced-block">
+        <div class="section-heading">
+          <h2>{{ texts().advancedTitle }}</h2>
+        </div>
 
         <label class="toggle-row">
           <input
@@ -114,8 +108,18 @@
           <span>{{ texts().removeWinner }}</span>
         </label>
 
+        <label class="toggle-row">
+          <input
+            #showConfettiInput
+            type="checkbox"
+            [checked]="settings().showConfetti"
+            (change)="setShowConfetti(showConfettiInput.checked)"
+          />
+          <span>{{ texts().confettiLabel }}</span>
+        </label>
+
         <p class="advanced-note">{{ texts().cleanupHint }}</p>
-      </details>
+      </section>
     </div>
   </section>
 

@@ -31,6 +31,17 @@ type AnnouncementState =
   | { readonly kind: 'shuffled' }
   | { readonly kind: 'expired' };
 
+type ConfettiPiece = {
+  readonly id: string;
+  readonly color: string;
+  readonly left: string;
+  readonly size: string;
+  readonly delay: string;
+  readonly duration: string;
+  readonly drift: string;
+  readonly rotation: string;
+};
+
 const STORAGE_KEY = 'random-wheel-state-v2';
 const INACTIVITY_LIMIT_MS = 20 * 60 * 1000;
 const DEFAULT_LANGUAGE: LanguageCode = 'ca';
@@ -38,16 +49,17 @@ const DEFAULT_SETTINGS: WheelSettings = {
   spinDurationSeconds: 4,
   spinTurns: 6,
   removeWinner: false,
+  showConfetti: true,
 };
 const DEFAULT_OPTION_COLORS = [
-  '#34c759',
-  '#30b0c7',
-  '#ff9f0a',
-  '#ff375f',
-  '#5856d6',
-  '#64d2ff',
-  '#ffd60a',
-  '#8e8e93',
+  '#f6c7c0',
+  '#f7d9a6',
+  '#c8e6c9',
+  '#b8def3',
+  '#d9cff6',
+  '#f5cfe3',
+  '#d7e8d1',
+  '#cfd5dd',
 ];
 
 @Component({
@@ -68,10 +80,13 @@ export class App {
   protected readonly options = signal<readonly WheelOption[]>(this.initialState.options);
   protected readonly rotation = signal(0);
   protected readonly selectedOptionId = signal<string | null>(null);
+  protected readonly lastWinnerLabel = signal<string | null>(null);
   protected readonly announcement = signal<AnnouncementState>({ kind: 'idle' });
   protected readonly isSpinning = signal(false);
   protected readonly isFullscreen = signal(false);
+  protected readonly confettiPieces = signal<readonly ConfettiPiece[]>([]);
   private readonly lastInteractionAt = signal(this.initialState.lastInteractionAt);
+  private confettiTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
   protected readonly texts = computed(() => APP_TEXTS[this.language()]);
   protected readonly selectedOption = computed(() => {
@@ -81,7 +96,6 @@ export class App {
   protected readonly canSpin = computed(
     () => this.options().length > 1 && !this.isSpinning()
   );
-  protected readonly hintText = computed(() => this.texts().wheelHint);
   protected readonly statusMessage = computed(() => {
     const texts = this.texts();
     const announcement = this.announcement();
@@ -114,13 +128,16 @@ export class App {
       return selectedOption.label;
     }
 
+    const lastWinnerLabel = this.lastWinnerLabel();
+    if (lastWinnerLabel) {
+      return lastWinnerLabel;
+    }
+
     if (this.isSpinning()) {
       return this.texts().spinning;
     }
 
-    return this.options().length > 1
-      ? this.texts().resultIdle
-      : this.texts().resultEmpty;
+    return '';
   });
 
   constructor() {
@@ -172,7 +189,7 @@ export class App {
   protected addOption(label: string): void {
     this.options.update((currentOptions) => [
       ...currentOptions,
-      this.createOption(label, currentOptions.length),
+      this.createOption(label, currentOptions),
     ]);
     this.announcement.set({ kind: 'added', count: 1 });
     this.registerInteraction();
@@ -235,6 +252,7 @@ export class App {
   protected clearOptions(): void {
     this.options.set([]);
     this.selectedOptionId.set(null);
+    this.lastWinnerLabel.set(null);
     this.announcement.set({ kind: 'cleared' });
     this.registerInteraction();
   }
@@ -244,6 +262,7 @@ export class App {
     this.settings.set(DEFAULT_SETTINGS);
     this.rotation.set(0);
     this.selectedOptionId.set(null);
+    this.lastWinnerLabel.set(null);
     this.announcement.set({ kind: 'reset' });
     this.registerInteraction();
   }
@@ -265,6 +284,14 @@ export class App {
     this.registerInteraction();
   }
 
+  protected setShowConfetti(showConfetti: boolean): void {
+    this.settings.update((currentSettings) => ({
+      ...currentSettings,
+      showConfetti,
+    }));
+    this.registerInteraction();
+  }
+
   protected spinWheel(): void {
     const options = this.options();
     if (options.length < 2 || this.isSpinning()) {
@@ -280,6 +307,7 @@ export class App {
 
     this.isSpinning.set(true);
     this.selectedOptionId.set(null);
+    this.lastWinnerLabel.set(null);
     this.announcement.set({ kind: 'spinning' });
     this.rotation.set(targetRotation);
 
@@ -296,7 +324,9 @@ export class App {
       }
 
       this.selectedOptionId.set(winner.id);
+      this.lastWinnerLabel.set(winner.label);
       this.announcement.set({ kind: 'winner', label: winner.label });
+      this.triggerConfetti();
 
       if (this.settings().removeWinner && this.options().length > 1) {
         this.options.update((currentOptions) =>
@@ -343,6 +373,7 @@ export class App {
 
     this.options.set([]);
     this.selectedOptionId.set(null);
+    this.lastWinnerLabel.set(null);
     this.announcement.set({ kind: 'expired' });
   }
 
@@ -437,6 +468,10 @@ export class App {
         typeof candidate.removeWinner === 'boolean'
           ? candidate.removeWinner
           : DEFAULT_SETTINGS.removeWinner,
+      showConfetti:
+        typeof candidate.showConfetti === 'boolean'
+          ? candidate.showConfetti
+          : DEFAULT_SETTINGS.showConfetti,
     };
   }
 
@@ -464,11 +499,14 @@ export class App {
     return `${count} ${count === 1 ? 'opció afegida.' : 'opcions afegides.'}`;
   }
 
-  private createOption(label: string, index: number): WheelOption {
+  private createOption(
+    label: string,
+    currentOptions: readonly WheelOption[]
+  ): WheelOption {
     return {
       id: this.createOptionId(),
       label,
-      color: DEFAULT_OPTION_COLORS[index % DEFAULT_OPTION_COLORS.length],
+      color: this.pickNextColor(currentOptions),
     };
   }
 
@@ -482,5 +520,101 @@ export class App {
 
   private clamp(value: number, min: number, max: number): number {
     return Math.min(Math.max(value, min), max);
+  }
+
+  private pickNextColor(currentOptions: readonly WheelOption[]): string {
+    const usedColors = new Set(currentOptions.map((option) => option.color.toLowerCase()));
+    const presetColor = DEFAULT_OPTION_COLORS.find(
+      (color) => !usedColors.has(color.toLowerCase())
+    );
+
+    if (presetColor) {
+      return presetColor;
+    }
+
+    let hue = (currentOptions.length * 37) % 360;
+    let candidate = '';
+
+    do {
+      candidate = this.hslToHex(hue, 52, 82);
+      hue = (hue + 29) % 360;
+    } while (usedColors.has(candidate.toLowerCase()));
+
+    return candidate;
+  }
+
+  private triggerConfetti(): void {
+    if (!this.isBrowser || !this.settings().showConfetti) {
+      this.confettiPieces.set([]);
+      return;
+    }
+
+    const pieces = Array.from({ length: 26 }, (_, index) => {
+      const color =
+        DEFAULT_OPTION_COLORS[index % DEFAULT_OPTION_COLORS.length] ??
+        this.hslToHex((index * 37) % 360, 52, 82);
+
+      return {
+        id: `${Date.now()}-${index}`,
+        color,
+        left: `${6 + ((index * 13) % 88)}%`,
+        size: `${8 + (index % 4) * 2}px`,
+        delay: `${(index % 6) * 30}ms`,
+        duration: `${1100 + (index % 5) * 120}ms`,
+        drift: `${-44 + (index % 9) * 11}px`,
+        rotation: `${-70 + (index % 8) * 18}deg`,
+      } satisfies ConfettiPiece;
+    });
+
+    this.confettiPieces.set(pieces);
+
+    if (this.confettiTimeoutId !== null) {
+      clearTimeout(this.confettiTimeoutId);
+    }
+
+    this.confettiTimeoutId = setTimeout(() => {
+      this.confettiPieces.set([]);
+      this.confettiTimeoutId = null;
+    }, 1800);
+  }
+
+  private hslToHex(hue: number, saturation: number, lightness: number): string {
+    const s = saturation / 100;
+    const l = lightness / 100;
+    const chroma = (1 - Math.abs(2 * l - 1)) * s;
+    const section = hue / 60;
+    const x = chroma * (1 - Math.abs((section % 2) - 1));
+    const match = l - chroma / 2;
+
+    let red = 0;
+    let green = 0;
+    let blue = 0;
+
+    if (section >= 0 && section < 1) {
+      red = chroma;
+      green = x;
+    } else if (section < 2) {
+      red = x;
+      green = chroma;
+    } else if (section < 3) {
+      green = chroma;
+      blue = x;
+    } else if (section < 4) {
+      green = x;
+      blue = chroma;
+    } else if (section < 5) {
+      red = x;
+      blue = chroma;
+    } else {
+      red = chroma;
+      blue = x;
+    }
+
+    const toHex = (value: number) =>
+      Math.round((value + match) * 255)
+        .toString(16)
+        .padStart(2, '0');
+
+    return `#${toHex(red)}${toHex(green)}${toHex(blue)}`;
   }
 }
