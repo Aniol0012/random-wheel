@@ -1,4 +1,5 @@
 export type LanguageCode = 'ca' | 'es' | 'en';
+export type ThemeMode = 'light' | 'dark';
 
 export type WheelOption = {
   readonly id: string;
@@ -15,6 +16,7 @@ export type WheelSettings = {
 
 export type StoredWheelState = {
   readonly language: LanguageCode;
+  readonly theme?: ThemeMode;
   readonly settings: WheelSettings;
   readonly options: readonly WheelOption[];
   readonly lastInteractionAt: number;
@@ -23,6 +25,8 @@ export type StoredWheelState = {
 export type UiTextSet = {
   readonly appName: string;
   readonly languageLabel: string;
+  readonly themeLightLabel: string;
+  readonly themeDarkLabel: string;
   readonly wheelAriaLabel: string;
   readonly wheelEmpty: string;
   readonly spin: string;

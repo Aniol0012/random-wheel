@@ -1,6 +1,8 @@
 {
   "appName": "Random Wheel",
   "languageLabel": "Idioma",
+  "themeLightLabel": "Activar modo claro",
+  "themeDarkLabel": "Activar modo oscuro",
   "wheelAriaLabel": "Rueda de seleccion",
   "wheelEmpty": "Anade al menos dos opciones para empezar.",
   "spin": "Girar",

@@ -1,6 +1,8 @@
 {
   "appName": "Random Wheel",
   "languageLabel": "Language",
+  "themeLightLabel": "Switch to light mode",
+  "themeDarkLabel": "Switch to dark mode",
   "wheelAriaLabel": "Selection wheel",
   "wheelEmpty": "Add at least two options to get started.",
   "spin": "Spin",

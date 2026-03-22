@@ -6,7 +6,7 @@ import { fromEvent, merge } from 'rxjs';
 import { OptionsEditorComponent } from './components/options-editor/options-editor.component';
 import { WheelStageComponent } from './components/wheel-stage/wheel-stage.component';
 import { APP_TEXTS } from './i18n/app-texts';
-import type { LanguageCode, StoredWheelState, WheelOption, WheelSettings } from './types/wheel.types';
+import type { LanguageCode, StoredWheelState, ThemeMode, WheelOption, WheelSettings } from './types/wheel.types';
 
 type AnnouncementState =
   | { readonly kind: 'idle' }
@@ -30,8 +30,9 @@ type ConfettiPiece = {
 };
 
 const STORAGE_KEY = 'random-wheel-state-v2';
-const INACTIVITY_LIMIT_MS = 20 * 60 * 1000;
+const INACTIVITY_LIMIT_MS: number = 20 * 60 * 1000;
 const DEFAULT_LANGUAGE: LanguageCode = 'ca';
+const DEFAULT_THEME: ThemeMode = 'light';
 const WHEEL_START_ANGLE_DEG = -90;
 const POINTER_ANGLE_DEG = -90;
 const DEFAULT_SETTINGS: WheelSettings = {
@@ -40,7 +41,7 @@ const DEFAULT_SETTINGS: WheelSettings = {
   removeWinner: false,
   showConfetti: true
 };
-const DEFAULT_OPTION_COLORS = ['#f39b93', '#f6c86f', '#8fd39b', '#7dc5ee', '#b29af3', '#f29fc7', '#72d0c3', '#9bb4ff'];
+const DEFAULT_OPTION_COLORS: string[] = ['#f39b93', '#f6c86f', '#8fd39b', '#7dc5ee', '#b29af3', '#f29fc7', '#72d0c3', '#9bb4ff'];
 
 @Component({
   selector: 'app-root',
@@ -56,6 +57,7 @@ export class App {
   private spinTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
   protected readonly language = signal<LanguageCode>(this.initialState.language);
+  protected readonly theme = signal<ThemeMode>(this.initialState.theme ?? DEFAULT_THEME);
   protected readonly settings = signal<WheelSettings>(this.initialState.settings);
   protected readonly options = signal<readonly WheelOption[]>(this.initialState.options);
   protected readonly rotation = signal(0);
@@ -124,12 +126,23 @@ export class App {
 
       const state: StoredWheelState = {
         language: this.language(),
+        theme: this.theme(),
         settings: this.settings(),
         options: this.options(),
         lastInteractionAt: this.lastInteractionAt()
       };
 
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      globalThis.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    });
+
+    effect(() => {
+      if (!this.isBrowser) {
+        return;
+      }
+
+      const isDark = this.theme() === 'dark';
+      document.body.classList.toggle('theme-dark', isDark);
+      document.body.classList.toggle('theme-light', !isDark);
     });
 
     if (!this.isBrowser) {
@@ -139,7 +152,7 @@ export class App {
     merge(
       fromEvent(document, 'pointerdown'),
       fromEvent(document, 'keydown'),
-      fromEvent(window, 'focus'),
+      fromEvent(globalThis, 'focus'),
       fromEvent(document, 'visibilitychange'),
       fromEvent(document, 'fullscreenchange')
     )
@@ -159,6 +172,11 @@ export class App {
       return;
     }
     this.language.set(language as LanguageCode);
+    this.registerInteraction();
+  }
+
+  protected toggleTheme(): void {
+    this.theme.update((currentTheme) => (currentTheme === 'dark' ? 'light' : 'dark'));
     this.registerInteraction();
   }
 
@@ -357,15 +375,17 @@ export class App {
       return 0;
     }
 
-    return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    return globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches
       ? 200
       : this.settings().spinDurationSeconds * 1000;
   }
 
   private loadState(): StoredWheelState {
     const browserLanguage = this.detectBrowserLanguage();
+    const systemTheme = this.detectSystemTheme();
     const fallbackState: StoredWheelState = {
       language: browserLanguage,
+      theme: systemTheme,
       settings: DEFAULT_SETTINGS,
       options: [],
       lastInteractionAt: Date.now()
@@ -376,7 +396,7 @@ export class App {
     }
 
     try {
-      const rawState = window.localStorage.getItem(STORAGE_KEY);
+      const rawState = globalThis.localStorage.getItem(STORAGE_KEY);
       if (!rawState) {
         return fallbackState;
       }
@@ -392,6 +412,7 @@ export class App {
 
       return {
         language: this.parseLanguage(parsed.language, browserLanguage),
+        theme: this.parseTheme(parsed.theme, systemTheme),
         settings: this.parseSettings(parsed.settings),
         options: Date.now() - lastInteractionAt > INACTIVITY_LIMIT_MS ? [] : options,
         lastInteractionAt
@@ -403,6 +424,10 @@ export class App {
 
   private parseLanguage(language: unknown, fallback: LanguageCode = DEFAULT_LANGUAGE): LanguageCode {
     return this.toLanguageCode(language) ?? fallback;
+  }
+
+  private parseTheme(theme: unknown, fallback: ThemeMode = DEFAULT_THEME): ThemeMode {
+    return theme === 'dark' || theme === 'light' ? theme : fallback;
   }
 
   private detectBrowserLanguage(): LanguageCode {
@@ -420,6 +445,18 @@ export class App {
     }
 
     return DEFAULT_LANGUAGE;
+  }
+
+  private detectSystemTheme(): ThemeMode {
+    if (!this.isBrowser) {
+      return DEFAULT_THEME;
+    }
+
+    if (typeof globalThis.matchMedia !== 'function') {
+      return DEFAULT_THEME;
+    }
+
+    return globalThis.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : DEFAULT_THEME;
   }
 
   private toLanguageCode(language: unknown): LanguageCode | null {
@@ -488,8 +525,8 @@ export class App {
   }
 
   private createOptionId(): string {
-    if (this.isBrowser && 'crypto' in window && 'randomUUID' in window.crypto) {
-      return window.crypto.randomUUID();
+    if (this.isBrowser && 'crypto' in globalThis && 'randomUUID' in globalThis.crypto) {
+      return globalThis.crypto.randomUUID();
     }
 
     return `option-${Math.random().toString(36).slice(2, 10)}`;
@@ -508,15 +545,14 @@ export class App {
     }
 
     let hue = (currentOptions.length * 37) % 360;
-    let candidate = '';
+    while (true) {
+      const candidate = this.hslToHex(hue, 68, 72);
+      if (!usedColors.has(candidate.toLowerCase())) {
+        return candidate;
+      }
 
-    do {
-      candidate = this.hslToHex(hue, 52, 82);
-      candidate = this.hslToHex(hue, 68, 72);
       hue = (hue + 29) % 360;
-    } while (usedColors.has(candidate.toLowerCase()));
-
-    return candidate;
+    }
   }
 
   private triggerConfetti(): void {
