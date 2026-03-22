@@ -1,59 +1,101 @@
-# RandomWheel
+# random-wheel
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.3.
+Small Angular app to run a random picker wheel.
 
-## Development server
+You add options, spin the wheel, and get a winner. It is built for quick use during standups, games, classroom picks, or any "pick one item" moment.
 
-To start a local development server, run:
+## what it does
 
-```bash
-ng serve
-```
+- Add, edit, recolor, shuffle, and remove options.
+- Spin the wheel with configurable duration.
+- Optional "remove winner" mode to avoid repeats.
+- Optional confetti when a winner is selected.
+- Fullscreen mode for presentations.
+- UI in Catalan, Spanish, and English.
+- Saves state in local storage and auto-clears options after inactivity.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## tech stack
 
-## Code scaffolding
+- Angular 21
+- TypeScript
+- pnpm
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+## quick start
 
 ```bash
-ng build
+pnpm install
+pnpm start
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Then open `http://localhost:4200/`.
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## available scripts
 
 ```bash
-ng test
+pnpm start
+pnpm build
+pnpm watch
+pnpm test
+pnpm lint
+pnpm lint-fix
+pnpm format
 ```
 
-## Running end-to-end tests
+Notes:
+- `lint-fix` runs `ng lint --fix`.
+- `format` runs Prettier on `ts/html/css/scss/json/md` files.
 
-For end-to-end (e2e) testing, run:
+## i18n
+
+Translations live in:
+
+- `src/app/i18n/locales/ca.json`
+- `src/app/i18n/locales/es.json`
+- `src/app/i18n/locales/en.json`
+
+The app switches language from the header buttons and resolves labels via `src/app/i18n/app-texts.ts`.
+
+## state and behavior
+
+- App state is stored in browser local storage (`random-wheel-state-v2`).
+- If there is no activity for 20 minutes, stored options are cleared.
+- If the user has reduced motion enabled, spin animation duration is shortened.
+
+Core logic is in `src/app/app.ts`.
+
+## deploy to github pages
+
+This repo includes a GitHub Actions deploy workflow:
+
+- `.github/workflows/deploy-pages.yml`
+
+It builds and publishes `dist/random-wheel/browser`.
+
+Current build command in CI:
 
 ```bash
-ng e2e
+pnpm ng build --configuration production --base-href /random-wheel/
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+If you rename the repository, update the `--base-href` value in that workflow.
 
-## Additional Resources
+## auto format and lint in ci
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+This repo also includes:
+
+- `.github/workflows/auto-format-lint.yml`
+
+On push, it runs formatting and lint autofix, then commits fixes back when needed.
+
+## project structure
+
+- `src/app/app.ts`: state, spinning logic, persistence, language handling.
+- `src/app/components/wheel-stage`: wheel rendering and spin interaction.
+- `src/app/components/options-editor`: option list editor.
+- `.github/workflows`: CI formatting/lint and GitHub Pages deploy.
+
+## development notes
+
+- Package manager is pinned in `package.json` (`pnpm@10.17.1`).
+- This project includes SSR entry files (`src/main.server.ts`, `src/server.ts`).
+- Production browser output is generated under `dist/random-wheel/browser`.
