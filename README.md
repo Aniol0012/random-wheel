@@ -42,7 +42,7 @@ pnpm format
 ```
 
 Notes:
-- `lint-fix` runs `ng lint --fix`.
+- `lint-fix` tries `ng lint --fix` and falls back to `ng lint` if `--fix` is not supported.
 - `format` runs Prettier on `ts/html/css/scss/json/md` files.
 
 ## i18n
