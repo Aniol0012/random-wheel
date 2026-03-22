@@ -1,0 +1,65 @@
+<section class="options-editor">
+  <div class="add-row">
+    <label class="add-field">
+      <span class="field-label">{{ inputLabel() }}</span>
+      <input
+        #draftInput
+        class="text-input"
+        type="text"
+        [value]="draft()"
+        [placeholder]="placeholder()"
+        (input)="onDraftInput(draftInput.value)"
+        (keydown)="onKeydown($event)"
+      />
+    </label>
+
+    <button class="add-button" type="button" [disabled]="!draft().trim()" (click)="submit()">
+      {{ addButtonLabel() }}
+    </button>
+  </div>
+
+  <div class="option-list" role="list">
+    @for (option of options(); track trackById($index, option)) {
+      <div class="option-item" role="listitem">
+        <input
+          #colorInput
+          class="sr-only"
+          type="color"
+          [value]="option.color"
+          [attr.aria-label]="colorLabel() + ': ' + option.label"
+          (input)="updateColor.emit({ id: option.id, color: colorInput.value })"
+        />
+
+        <button
+          class="color-button"
+          type="button"
+          [style.background]="option.color"
+          [attr.aria-label]="colorLabel() + ': ' + option.label"
+          (click)="colorInput.click()"
+        ></button>
+
+        <label class="sr-only" [attr.for]="'option-' + option.id">
+          {{ option.label }}
+        </label>
+        <input
+          #optionInput
+          class="option-name"
+          [id]="'option-' + option.id"
+          [value]="option.label"
+          (input)="updateLabel.emit({ id: option.id, label: optionInput.value })"
+        />
+
+        <button
+          class="delete-button"
+          type="button"
+          [attr.aria-label]="deleteLabel() + ': ' + option.label"
+          (click)="removeOption.emit(option.id)"
+        >
+          ×
+        </button>
+      </div>
+    } @empty {
+      <p class="empty-message">{{ emptyLabel() }}</p>
+    }
+  </div>
+</section>

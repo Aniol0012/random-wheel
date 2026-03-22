@@ -1,0 +1,64 @@
+<section class="wheel-section">
+  <div class="wheel-frame">
+    <div class="pointer" aria-hidden="true"></div>
+
+    <div
+      class="wheel-touch-area"
+      [class.is-clickable]="wheelIsInteractive()"
+      [class.is-disabled]="!canSpin()"
+      [attr.role]="wheelIsInteractive() ? 'button' : null"
+      [attr.tabindex]="wheelIsInteractive() ? 0 : null"
+      [attr.aria-disabled]="!canSpin()"
+      [attr.aria-label]="wheelAriaLabel()"
+      (click)="wheelIsInteractive() ? requestSpin() : null"
+      (keydown)="onWheelKeydown($event)"
+    >
+      @if (slices().length > 0) {
+        <svg
+          class="wheel-svg"
+          viewBox="0 0 200 200"
+          [style.transform]="'rotate(' + rotation() + 'deg)'"
+          [style.transition-duration]="durationSeconds() + 's'"
+        >
+          @for (slice of slices(); track slice.id) {
+            <path
+              [attr.d]="slice.path"
+              [attr.fill]="slice.color"
+              stroke="rgba(255,255,255,0.88)"
+              stroke-width="1.6"
+            />
+          }
+
+          @for (slice of slices(); track slice.id) {
+            <text
+              class="wheel-label"
+              [attr.x]="slice.labelX"
+              [attr.y]="slice.labelY"
+              [attr.transform]="'rotate(' + slice.labelRotation + ' ' + slice.labelX + ' ' + slice.labelY + ')'"
+            >
+              {{ slice.label }}
+            </text>
+          }
+
+          <circle cx="100" cy="100" r="18" fill="#f6f5ef" />
+          <circle cx="100" cy="100" r="8" fill="#364241" />
+        </svg>
+      } @else {
+        <div class="wheel-empty">{{ emptyLabel() }}</div>
+      }
+    </div>
+  </div>
+
+  <p class="wheel-hint">{{ hintText() }}</p>
+
+  @if (showButton()) {
+    <button
+      class="spin-button"
+      type="button"
+      [disabled]="!canSpin()"
+      (click)="requestSpin()"
+    >
+      {{ isSpinning() ? spinningLabel() : spinLabel() }}
+    </button>
+  }
+</section>

@@ -1,0 +1,115 @@
+.options-editor {
+  display: grid;
+  gap: 1rem;
+}
+
+.add-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: end;
+}
+
+.add-field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.field-label {
+  font-weight: 700;
+}
+
+.text-input,
+.option-name {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.8rem 0.95rem;
+  border: 1px solid #d7dbd1;
+  border-radius: 1rem;
+  background: #fcfcf9;
+  color: #1f2a2a;
+}
+
+.text-input:focus-visible,
+.option-name:focus-visible,
+.add-button:focus-visible,
+.delete-button:focus-visible,
+.color-button:focus-visible {
+  outline: 3px solid #6d8797;
+  outline-offset: 2px;
+}
+
+.add-button {
+  min-height: 3rem;
+  padding: 0.8rem 1.15rem;
+  border: 0;
+  border-radius: 999px;
+  background: #2f6f68;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.add-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.option-list {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.option-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.75rem;
+  border-radius: 1rem;
+  background: #f3f5f1;
+  border: 1px solid #dfe3d9;
+}
+
+.color-button {
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 0 0 1px rgba(31, 42, 42, 0.08);
+}
+
+.delete-button {
+  width: 2.3rem;
+  height: 2.3rem;
+  border: 0;
+  border-radius: 999px;
+  background: #eadfe3;
+  color: #7c4e61;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.empty-message {
+  margin: 0;
+  color: #55605f;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 640px) {
+  .add-row {
+    grid-template-columns: 1fr;
+  }
+}

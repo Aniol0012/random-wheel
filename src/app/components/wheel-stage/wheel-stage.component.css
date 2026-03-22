@@ -1,0 +1,122 @@
+.wheel-section {
+  display: grid;
+  gap: 1rem;
+}
+
+.wheel-frame {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem 1rem 1rem;
+  border-radius: 1.75rem;
+  background: #eef1ec;
+  border: 1px solid #d7dbd1;
+}
+
+.pointer {
+  position: absolute;
+  top: 0.5rem;
+  left: 50%;
+  z-index: 2;
+  width: 0;
+  height: 0;
+  border-left: 0.95rem solid transparent;
+  border-right: 0.95rem solid transparent;
+  border-bottom: 1.6rem solid #8c4f63;
+  transform: translateX(-50%);
+}
+
+.wheel-touch-area {
+  width: min(100%, 33rem);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #f8f7f3;
+  border: 10px solid #f0efe8;
+  box-shadow: 0 18px 40px rgba(34, 44, 43, 0.08);
+}
+
+.wheel-touch-area.is-clickable {
+  cursor: pointer;
+}
+
+.wheel-touch-area.is-clickable:focus-visible {
+  outline: 3px solid #6d8797;
+  outline-offset: 4px;
+}
+
+.wheel-touch-area.is-disabled {
+  opacity: 0.72;
+}
+
+.wheel-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 10px 22px rgba(34, 44, 43, 0.08));
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.wheel-label {
+  fill: rgba(255, 255, 255, 0.97);
+  font-size: 8px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  paint-order: stroke;
+  stroke: rgba(33, 38, 46, 0.18);
+  stroke-width: 1.6px;
+}
+
+.wheel-empty {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  text-align: center;
+  padding: 2rem;
+  color: #55605f;
+  background: #f3f2ec;
+}
+
+.wheel-hint {
+  margin: 0;
+  text-align: center;
+  color: #55605f;
+}
+
+.spin-button {
+  min-height: 3.25rem;
+  padding: 0.85rem 1.4rem;
+  border: 0;
+  border-radius: 999px;
+  background: #2f6f68;
+  color: white;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+}
+
+.spin-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.spin-button:focus-visible {
+  outline: 3px solid #6d8797;
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .wheel-label {
+    font-size: 6.8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wheel-svg {
+    transition: none;
+  }
+}
