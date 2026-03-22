@@ -28,6 +28,8 @@
     "@angular/build": "^21.2.3",
     "@angular/cli": "^21.2.3",
     "@angular/compiler-cli": "^21.2.0",
+    "@angular/localize": "^21.2.5",
+    "@spartan-ng/cli": "0.0.1-alpha.655",
     "@tailwindcss/postcss": "^4.1.12",
     "@types/express": "^5.0.1",
     "@types/node": "^20.17.19",
