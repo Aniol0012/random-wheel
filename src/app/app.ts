@@ -268,7 +268,7 @@ export class App {
     this.spinTimeoutId = setTimeout(() => {
       const currentOptions = this.options();
       const resolvedWinnerIndex = this.resolveWinnerIndexAtPointer(currentOptions.length, this.rotation());
-      const winner = resolvedWinnerIndex === null ? null : currentOptions[resolvedWinnerIndex] ?? null;
+      const winner = resolvedWinnerIndex === null ? null : (currentOptions[resolvedWinnerIndex] ?? null);
       this.isSpinning.set(false);
 
       if (!winner) {
