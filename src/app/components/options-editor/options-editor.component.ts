@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  input,
+  output,
+  signal,
+  viewChild,
+} from '@angular/core';
 
 import type { WheelOption } from '../../types/wheel.types';
 
@@ -22,6 +30,8 @@ export class OptionsEditorComponent {
   readonly removeOption = output<string>();
 
   protected readonly draft = signal('');
+  private readonly draftInput =
+    viewChild<ElementRef<HTMLInputElement>>('draftInput');
 
   protected submit(): void {
     const value = this.draft().trim();
@@ -31,6 +41,9 @@ export class OptionsEditorComponent {
 
     this.addOption.emit(value);
     this.draft.set('');
+    queueMicrotask(() => {
+      this.draftInput()?.nativeElement.focus();
+    });
   }
 
   protected onDraftInput(value: string): void {
@@ -39,6 +52,19 @@ export class OptionsEditorComponent {
 
   protected onKeydown(event: KeyboardEvent): void {
     if (event.key !== 'Enter') {
+      return;
+    }
+
+    event.preventDefault();
+    this.submit();
+  }
+
+  protected onOptionKeydown(event: KeyboardEvent, value: string): void {
+    if (event.key !== 'Enter') {
+      return;
+    }
+
+    if (!value.trim()) {
       return;
     }
 

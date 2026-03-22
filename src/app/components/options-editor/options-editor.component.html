@@ -1,20 +1,4 @@
 <section class="options-editor">
-  <div class="add-row">
-    <input
-      #draftInput
-      class="text-input"
-      type="text"
-      [value]="draft()"
-      [placeholder]="placeholder()"
-      (input)="onDraftInput(draftInput.value)"
-      (keydown)="onKeydown($event)"
-    />
-
-    <button class="add-button" type="button" [disabled]="!draft().trim()" (click)="submit()">
-      {{ addButtonLabel() }}
-    </button>
-  </div>
-
   <div class="option-list" role="list">
     @for (option of options(); track trackById($index, option)) {
       <div class="option-item" role="listitem">
@@ -44,6 +28,7 @@
           [id]="'option-' + option.id"
           [value]="option.label"
           (input)="updateLabel.emit({ id: option.id, label: optionInput.value })"
+          (keydown)="onOptionKeydown($event, optionInput.value)"
         />
 
         <button
@@ -64,8 +49,22 @@
           </svg>
         </button>
       </div>
-    } @empty {
-      <p class="empty-message">{{ emptyLabel() }}</p>
     }
+
+    <div class="option-item option-item-draft" role="listitem">
+      <span class="draft-badge" aria-hidden="true">+</span>
+      <input
+        #draftInput
+        class="text-input option-name"
+        type="text"
+        [value]="draft()"
+        [placeholder]="placeholder()"
+        (input)="onDraftInput(draftInput.value)"
+        (keydown)="onKeydown($event)"
+      />
+      <button class="add-button" type="button" [disabled]="!draft().trim()" (click)="submit()">
+        {{ addButtonLabel() }}
+      </button>
+    </div>
   </div>
 </section>

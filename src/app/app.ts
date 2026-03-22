@@ -52,14 +52,14 @@ const DEFAULT_SETTINGS: WheelSettings = {
   showConfetti: true,
 };
 const DEFAULT_OPTION_COLORS = [
-  '#f6c7c0',
-  '#f7d9a6',
-  '#c8e6c9',
-  '#b8def3',
-  '#d9cff6',
-  '#f5cfe3',
-  '#d7e8d1',
-  '#cfd5dd',
+  '#f39b93',
+  '#f6c86f',
+  '#8fd39b',
+  '#7dc5ee',
+  '#b29af3',
+  '#f29fc7',
+  '#72d0c3',
+  '#9bb4ff',
 ];
 
 @Component({
@@ -106,7 +106,7 @@ export class App {
       case 'winner':
         return texts.statusIdle;
       case 'added':
-        return this.formatAddedMessage(announcement.count);
+        return this.formatAddedMessage(this.options().length);
       case 'cleared':
         return texts.statusCleared;
       case 'reset':
@@ -251,19 +251,11 @@ export class App {
 
   protected clearOptions(): void {
     this.options.set([]);
-    this.selectedOptionId.set(null);
-    this.lastWinnerLabel.set(null);
-    this.announcement.set({ kind: 'cleared' });
-    this.registerInteraction();
-  }
-
-  protected resetWorkspace(): void {
-    this.options.set([]);
     this.settings.set(DEFAULT_SETTINGS);
     this.rotation.set(0);
     this.selectedOptionId.set(null);
     this.lastWinnerLabel.set(null);
-    this.announcement.set({ kind: 'reset' });
+    this.announcement.set({ kind: 'cleared' });
     this.registerInteraction();
   }
 
@@ -537,6 +529,7 @@ export class App {
 
     do {
       candidate = this.hslToHex(hue, 52, 82);
+      candidate = this.hslToHex(hue, 68, 72);
       hue = (hue + 29) % 360;
     } while (usedColors.has(candidate.toLowerCase()));
 
@@ -552,7 +545,7 @@ export class App {
     const pieces = Array.from({ length: 26 }, (_, index) => {
       const color =
         DEFAULT_OPTION_COLORS[index % DEFAULT_OPTION_COLORS.length] ??
-        this.hslToHex((index * 37) % 360, 52, 82);
+        this.hslToHex((index * 37) % 360, 68, 72);
 
       return {
         id: `${Date.now()}-${index}`,

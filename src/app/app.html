@@ -4,19 +4,23 @@
       <h1>{{ texts().appName }}</h1>
     </div>
 
-    <nav class="language-switcher" [attr.aria-label]="texts().languageLabel">
-      @for (languageOption of ['ca', 'es', 'en']; track trackLanguage($index, languageOption)) {
-        <button
-          class="language-button"
-          type="button"
-          [class.is-active]="language() === languageOption"
-          [attr.aria-pressed]="language() === languageOption"
-          (click)="setLanguage(languageOption)"
-        >
-          {{ languageOption.toUpperCase() }}
-        </button>
-      }
-    </nav>
+    <div class="header-actions">
+      <img class="brand-mark" src="favicon.svg" alt="" />
+
+      <nav class="language-switcher" [attr.aria-label]="texts().languageLabel">
+        @for (languageOption of ['ca', 'es', 'en']; track trackLanguage($index, languageOption)) {
+          <button
+            class="language-button"
+            type="button"
+            [class.is-active]="language() === languageOption"
+            [attr.aria-pressed]="language() === languageOption"
+            (click)="setLanguage(languageOption)"
+          >
+            {{ languageOption.toUpperCase() }}
+          </button>
+        }
+      </nav>
+    </div>
   </header>
 
   <section class="studio">
@@ -84,9 +88,6 @@
           <button class="secondary-button shuffle" type="button" (click)="shuffleOptions()">
             {{ texts().shuffle }}
           </button>
-          <button class="secondary-button reset" type="button" (click)="resetWorkspace()">
-            {{ texts().reset }}
-          </button>
           <button class="secondary-button danger" type="button" (click)="clearOptions()">
             {{ texts().clear }}
           </button>
@@ -124,7 +125,6 @@
   </section>
 
   <footer class="page-footer">
-    <p>{{ texts().footerCredits }}</p>
     <a
       class="icon-link"
       href="https://github.com/Aniol0012/random-wheel"
