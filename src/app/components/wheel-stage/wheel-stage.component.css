@@ -225,9 +225,7 @@
 
   100% {
     opacity: 0;
-    transform:
-      translate3d(var(--confetti-drift), 430px, 0)
-      rotate(var(--confetti-rotation));
+    transform: translate3d(var(--confetti-drift), 430px, 0) rotate(var(--confetti-rotation));
   }
 }
 

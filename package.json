@@ -7,10 +7,10 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint",
-    "lint-fix": "ng lint --fix || ng lint",
+    "lint": "prettier --check \"**/*.{ts,html,css,scss,json,md}\"",
+    "lint-fix": "prettier --write \"**/*.{ts,html,css,scss,json,md}\"",
     "format": "prettier --write \"**/*.{ts,html,css,scss,json,md}\"",
-    "lint-format": "prettier --write \"**/*.{ts,html,css,scss,json,md}\" && ng lint",
+    "lint-format": "pnpm run lint-fix",
     "serve:ssr:random-wheel": "node dist/random-wheel/server/server.mjs"
   },
   "private": true,

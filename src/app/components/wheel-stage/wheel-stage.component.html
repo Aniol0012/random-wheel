@@ -19,8 +19,7 @@
           [style.--confetti-delay]="piece.delay"
           [style.--confetti-duration]="piece.duration"
           [style.--confetti-drift]="piece.drift"
-          [style.--confetti-rotation]="piece.rotation"
-        ></span>
+          [style.--confetti-rotation]="piece.rotation"></span>
       }
     </div>
 
@@ -35,22 +34,19 @@
       [attr.aria-disabled]="!canSpin()"
       [attr.aria-label]="wheelAriaLabel()"
       (click)="requestSpin()"
-      (keydown)="onWheelKeydown($event)"
-    >
+      (keydown)="onWheelKeydown($event)">
       @if (slices().length > 0) {
         <svg
           class="wheel-svg"
           viewBox="0 0 200 200"
           [style.transform]="'rotate(' + rotation() + 'deg)'"
-          [style.transition-duration]="durationSeconds() + 's'"
-        >
+          [style.transition-duration]="durationSeconds() + 's'">
           @for (slice of slices(); track slice.id) {
             <path
               [attr.d]="slice.path"
               [attr.fill]="slice.color"
               stroke="rgba(255,255,255,0.88)"
-              stroke-width="1.6"
-            />
+              stroke-width="1.6" />
           }
 
           @for (slice of slices(); track slice.id) {
@@ -58,8 +54,9 @@
               class="wheel-label"
               [attr.x]="slice.labelX"
               [attr.y]="slice.labelY"
-              [attr.transform]="'rotate(' + slice.labelRotation + ' ' + slice.labelX + ' ' + slice.labelY + ')'"
-            >
+              [attr.transform]="
+                'rotate(' + slice.labelRotation + ' ' + slice.labelX + ' ' + slice.labelY + ')'
+              ">
               {{ slice.label }}
             </text>
           }
@@ -77,23 +74,16 @@
       type="button"
       [attr.aria-label]="fullscreenLabel()"
       [class.is-active]="isFullscreen()"
-      (click)="requestFullscreen($event)"
-    >
+      (click)="requestFullscreen($event)">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path
-          d="M7 3H4a1 1 0 0 0-1 1v3h2V5h2V3Zm14 1a1 1 0 0 0-1-1h-3v2h2v2h2V4ZM5 17H3v3a1 1 0 0 0 1 1h3v-2H5v-2Zm16 0h-2v2h-2v2h3a1 1 0 0 0 1-1v-3Z"
-        />
+          d="M7 3H4a1 1 0 0 0-1 1v3h2V5h2V3Zm14 1a1 1 0 0 0-1-1h-3v2h2v2h2V4ZM5 17H3v3a1 1 0 0 0 1 1h3v-2H5v-2Zm16 0h-2v2h-2v2h3a1 1 0 0 0 1-1v-3Z" />
       </svg>
     </button>
   </div>
 
   @if (!isFullscreen()) {
-    <button
-      class="spin-button"
-      type="button"
-      [disabled]="!canSpin()"
-      (click)="requestSpin()"
-    >
+    <button class="spin-button" type="button" [disabled]="!canSpin()" (click)="requestSpin()">
       {{ isSpinning() ? spinningLabel() : spinLabel() }}
     </button>
   }

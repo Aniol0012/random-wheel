@@ -1,25 +1,12 @@
 import { isPlatformBrowser } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  PLATFORM_ID,
-  computed,
-  effect,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fromEvent, merge } from 'rxjs';
 
 import { OptionsEditorComponent } from './components/options-editor/options-editor.component';
 import { WheelStageComponent } from './components/wheel-stage/wheel-stage.component';
 import { APP_TEXTS } from './i18n/app-texts';
-import type {
-  LanguageCode,
-  StoredWheelState,
-  WheelOption,
-  WheelSettings,
-} from './types/wheel.types';
+import type { LanguageCode, StoredWheelState, WheelOption, WheelSettings } from './types/wheel.types';
 
 type AnnouncementState =
   | { readonly kind: 'idle' }
@@ -49,25 +36,16 @@ const DEFAULT_SETTINGS: WheelSettings = {
   spinDurationSeconds: 4,
   spinTurns: 6,
   removeWinner: false,
-  showConfetti: true,
+  showConfetti: true
 };
-const DEFAULT_OPTION_COLORS = [
-  '#f39b93',
-  '#f6c86f',
-  '#8fd39b',
-  '#7dc5ee',
-  '#b29af3',
-  '#f29fc7',
-  '#72d0c3',
-  '#9bb4ff',
-];
+const DEFAULT_OPTION_COLORS = ['#f39b93', '#f6c86f', '#8fd39b', '#7dc5ee', '#b29af3', '#f29fc7', '#72d0c3', '#9bb4ff'];
 
 @Component({
   selector: 'app-root',
   imports: [WheelStageComponent, OptionsEditorComponent],
   templateUrl: './app.html',
   styleUrl: './app.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class App {
   private readonly platformId = inject(PLATFORM_ID);
@@ -93,9 +71,7 @@ export class App {
     const selectedId = this.selectedOptionId();
     return this.options().find((option) => option.id === selectedId) ?? null;
   });
-  protected readonly canSpin = computed(
-    () => this.options().length > 1 && !this.isSpinning()
-  );
+  protected readonly canSpin = computed(() => this.options().length > 1 && !this.isSpinning());
   protected readonly statusMessage = computed(() => {
     const texts = this.texts();
     const announcement = this.announcement();
@@ -119,9 +95,7 @@ export class App {
         return texts.statusIdle;
     }
   });
-  protected readonly optionCountLabel = computed(() =>
-    this.formatOptionCount(this.options().length)
-  );
+  protected readonly optionCountLabel = computed(() => this.formatOptionCount(this.options().length));
   protected readonly resultLabel = computed(() => {
     const selectedOption = this.selectedOption();
     if (selectedOption) {
@@ -150,7 +124,7 @@ export class App {
         language: this.language(),
         settings: this.settings(),
         options: this.options(),
-        lastInteractionAt: this.lastInteractionAt(),
+        lastInteractionAt: this.lastInteractionAt()
       };
 
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -187,44 +161,29 @@ export class App {
   }
 
   protected addOption(label: string): void {
-    this.options.update((currentOptions) => [
-      ...currentOptions,
-      this.createOption(label, currentOptions),
-    ]);
+    this.options.update((currentOptions) => [...currentOptions, this.createOption(label, currentOptions)]);
     this.announcement.set({ kind: 'added', count: 1 });
     this.registerInteraction();
   }
 
-  protected updateOptionLabel(payload: {
-    readonly id: string;
-    readonly label: string;
-  }): void {
+  protected updateOptionLabel(payload: { readonly id: string; readonly label: string }): void {
     this.options.update((currentOptions) =>
       currentOptions.map((option) =>
-        option.id === payload.id
-          ? { ...option, label: payload.label.trim() || option.label }
-          : option
+        option.id === payload.id ? { ...option, label: payload.label.trim() || option.label } : option
       )
     );
     this.registerInteraction();
   }
 
-  protected updateOptionColor(payload: {
-    readonly id: string;
-    readonly color: string;
-  }): void {
+  protected updateOptionColor(payload: { readonly id: string; readonly color: string }): void {
     this.options.update((currentOptions) =>
-      currentOptions.map((option) =>
-        option.id === payload.id ? { ...option, color: payload.color } : option
-      )
+      currentOptions.map((option) => (option.id === payload.id ? { ...option, color: payload.color } : option))
     );
     this.registerInteraction();
   }
 
   protected removeOption(optionId: string): void {
-    this.options.update((currentOptions) =>
-      currentOptions.filter((option) => option.id !== optionId)
-    );
+    this.options.update((currentOptions) => currentOptions.filter((option) => option.id !== optionId));
 
     if (this.selectedOptionId() === optionId) {
       this.selectedOptionId.set(null);
@@ -238,10 +197,7 @@ export class App {
 
     for (let index = shuffled.length - 1; index > 0; index -= 1) {
       const swapIndex = Math.floor(Math.random() * (index + 1));
-      [shuffled[index], shuffled[swapIndex]] = [
-        shuffled[swapIndex],
-        shuffled[index],
-      ];
+      [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
     }
 
     this.options.set(shuffled);
@@ -263,7 +219,7 @@ export class App {
     const duration = Number(value);
     this.settings.update((currentSettings) => ({
       ...currentSettings,
-      spinDurationSeconds: this.clamp(duration, 1, 10),
+      spinDurationSeconds: this.clamp(duration, 1, 10)
     }));
     this.registerInteraction();
   }
@@ -271,7 +227,7 @@ export class App {
   protected setRemoveWinner(removeWinner: boolean): void {
     this.settings.update((currentSettings) => ({
       ...currentSettings,
-      removeWinner,
+      removeWinner
     }));
     this.registerInteraction();
   }
@@ -279,7 +235,7 @@ export class App {
   protected setShowConfetti(showConfetti: boolean): void {
     this.settings.update((currentSettings) => ({
       ...currentSettings,
-      showConfetti,
+      showConfetti
     }));
     this.registerInteraction();
   }
@@ -321,9 +277,7 @@ export class App {
       this.triggerConfetti();
 
       if (this.settings().removeWinner && this.options().length > 1) {
-        this.options.update((currentOptions) =>
-          currentOptions.filter((option) => option.id !== winner.id)
-        );
+        this.options.update((currentOptions) => currentOptions.filter((option) => option.id !== winner.id));
         this.selectedOptionId.set(null);
       }
     }, duration);
@@ -369,14 +323,10 @@ export class App {
     this.announcement.set({ kind: 'expired' });
   }
 
-  private calculateTargetRotation(
-    winnerIndex: number,
-    anglePerSlice: number
-  ): number {
+  private calculateTargetRotation(winnerIndex: number, anglePerSlice: number): number {
     const currentRotation = this.rotation();
     const normalizedRotation = ((currentRotation % 360) + 360) % 360;
-    const targetNormalized =
-      (270 - (winnerIndex * anglePerSlice + anglePerSlice / 2) + 360) % 360;
+    const targetNormalized = (270 - (winnerIndex * anglePerSlice + anglePerSlice / 2) + 360) % 360;
     const delta = (targetNormalized - normalizedRotation + 360) % 360;
 
     return currentRotation + this.settings().spinTurns * 360 + delta;
@@ -397,7 +347,7 @@ export class App {
       language: DEFAULT_LANGUAGE,
       settings: DEFAULT_SETTINGS,
       options: [],
-      lastInteractionAt: Date.now(),
+      lastInteractionAt: Date.now()
     };
 
     if (!this.isBrowser) {
@@ -414,22 +364,16 @@ export class App {
       const options = Array.isArray(parsed.options)
         ? parsed.options.filter(
             (option): option is WheelOption =>
-              typeof option?.id === 'string' &&
-              typeof option?.label === 'string' &&
-              typeof option?.color === 'string'
+              typeof option?.id === 'string' && typeof option?.label === 'string' && typeof option?.color === 'string'
           )
         : [];
-      const lastInteractionAt =
-        typeof parsed.lastInteractionAt === 'number'
-          ? parsed.lastInteractionAt
-          : Date.now();
+      const lastInteractionAt = typeof parsed.lastInteractionAt === 'number' ? parsed.lastInteractionAt : Date.now();
 
       return {
         language: this.parseLanguage(parsed.language),
         settings: this.parseSettings(parsed.settings),
-        options:
-          Date.now() - lastInteractionAt > INACTIVITY_LIMIT_MS ? [] : options,
-        lastInteractionAt,
+        options: Date.now() - lastInteractionAt > INACTIVITY_LIMIT_MS ? [] : options,
+        lastInteractionAt
       };
     } catch {
       return fallbackState;
@@ -453,17 +397,10 @@ export class App {
           ? this.clamp(candidate.spinDurationSeconds, 1, 10)
           : DEFAULT_SETTINGS.spinDurationSeconds,
       spinTurns:
-        typeof candidate.spinTurns === 'number'
-          ? this.clamp(candidate.spinTurns, 3, 9)
-          : DEFAULT_SETTINGS.spinTurns,
+        typeof candidate.spinTurns === 'number' ? this.clamp(candidate.spinTurns, 3, 9) : DEFAULT_SETTINGS.spinTurns,
       removeWinner:
-        typeof candidate.removeWinner === 'boolean'
-          ? candidate.removeWinner
-          : DEFAULT_SETTINGS.removeWinner,
-      showConfetti:
-        typeof candidate.showConfetti === 'boolean'
-          ? candidate.showConfetti
-          : DEFAULT_SETTINGS.showConfetti,
+        typeof candidate.removeWinner === 'boolean' ? candidate.removeWinner : DEFAULT_SETTINGS.removeWinner,
+      showConfetti: typeof candidate.showConfetti === 'boolean' ? candidate.showConfetti : DEFAULT_SETTINGS.showConfetti
     };
   }
 
@@ -491,14 +428,11 @@ export class App {
     return `${count} ${count === 1 ? 'opció afegida.' : 'opcions afegides.'}`;
   }
 
-  private createOption(
-    label: string,
-    currentOptions: readonly WheelOption[]
-  ): WheelOption {
+  private createOption(label: string, currentOptions: readonly WheelOption[]): WheelOption {
     return {
       id: this.createOptionId(),
       label,
-      color: this.pickNextColor(currentOptions),
+      color: this.pickNextColor(currentOptions)
     };
   }
 
@@ -516,9 +450,7 @@ export class App {
 
   private pickNextColor(currentOptions: readonly WheelOption[]): string {
     const usedColors = new Set(currentOptions.map((option) => option.color.toLowerCase()));
-    const presetColor = DEFAULT_OPTION_COLORS.find(
-      (color) => !usedColors.has(color.toLowerCase())
-    );
+    const presetColor = DEFAULT_OPTION_COLORS.find((color) => !usedColors.has(color.toLowerCase()));
 
     if (presetColor) {
       return presetColor;
@@ -544,8 +476,7 @@ export class App {
 
     const pieces = Array.from({ length: 26 }, (_, index) => {
       const color =
-        DEFAULT_OPTION_COLORS[index % DEFAULT_OPTION_COLORS.length] ??
-        this.hslToHex((index * 37) % 360, 68, 72);
+        DEFAULT_OPTION_COLORS[index % DEFAULT_OPTION_COLORS.length] ?? this.hslToHex((index * 37) % 360, 68, 72);
 
       return {
         id: `${Date.now()}-${index}`,
@@ -555,7 +486,7 @@ export class App {
         delay: `${(index % 6) * 30}ms`,
         duration: `${1100 + (index % 5) * 120}ms`,
         drift: `${-44 + (index % 9) * 11}px`,
-        rotation: `${-70 + (index % 8) * 18}deg`,
+        rotation: `${-70 + (index % 8) * 18}deg`
       } satisfies ConfettiPiece;
     });
 

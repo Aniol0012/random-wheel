@@ -1,12 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  input,
-  output,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, input, output, signal, viewChild } from '@angular/core';
 
 import type { WheelOption } from '../../types/wheel.types';
 
@@ -14,7 +6,7 @@ import type { WheelOption } from '../../types/wheel.types';
   selector: 'app-options-editor',
   templateUrl: './options-editor.component.html',
   styleUrl: './options-editor.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OptionsEditorComponent {
   readonly options = input.required<readonly WheelOption[]>();
@@ -30,8 +22,7 @@ export class OptionsEditorComponent {
   readonly removeOption = output<string>();
 
   protected readonly draft = signal('');
-  private readonly draftInput =
-    viewChild<ElementRef<HTMLInputElement>>('draftInput');
+  private readonly draftInput = viewChild<ElementRef<HTMLInputElement>>('draftInput');
 
   protected submit(): void {
     const value = this.draft().trim();

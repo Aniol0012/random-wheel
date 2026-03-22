@@ -8,16 +8,14 @@
           type="color"
           [value]="option.color"
           [attr.aria-label]="colorLabel() + ': ' + option.label"
-          (input)="updateColor.emit({ id: option.id, color: colorInput.value })"
-        />
+          (input)="updateColor.emit({ id: option.id, color: colorInput.value })" />
 
         <button
           class="color-button"
           type="button"
           [style.background]="option.color"
           [attr.aria-label]="colorLabel() + ': ' + option.label"
-          (click)="colorInput.click()"
-        ></button>
+          (click)="colorInput.click()"></button>
 
         <label class="sr-only" [attr.for]="'option-' + option.id">
           {{ option.label }}
@@ -28,15 +26,13 @@
           [id]="'option-' + option.id"
           [value]="option.label"
           (input)="updateLabel.emit({ id: option.id, label: optionInput.value })"
-          (keydown)="onOptionKeydown($event, optionInput.value)"
-        />
+          (keydown)="onOptionKeydown($event, optionInput.value)" />
 
         <button
           class="delete-button"
           type="button"
           [attr.aria-label]="deleteLabel() + ': ' + option.label"
-          (click)="removeOption.emit(option.id)"
-        >
+          (click)="removeOption.emit(option.id)">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path
               d="M9 3.75h6m-8.25 3h10.5m-9.75 0 .56 11.02a1.5 1.5 0 0 0 1.5 1.43h4.38a1.5 1.5 0 0 0 1.5-1.43l.56-11.02M10 10.25v5.5m4-5.5v5.5"
@@ -44,8 +40,7 @@
               stroke="currentColor"
               stroke-linecap="round"
               stroke-linejoin="round"
-              stroke-width="1.8"
-            />
+              stroke-width="1.8" />
           </svg>
         </button>
       </div>
@@ -60,8 +55,7 @@
         [value]="draft()"
         [placeholder]="placeholder()"
         (input)="onDraftInput(draftInput.value)"
-        (keydown)="onKeydown($event)"
-      />
+        (keydown)="onKeydown($event)" />
       <button class="add-button" type="button" [disabled]="!draft().trim()" (click)="submit()">
         {{ addButtonLabel() }}
       </button>

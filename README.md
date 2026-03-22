@@ -1,101 +1,52 @@
-# random-wheel
+# Random Wheel
 
-Small Angular app to run a random picker wheel.
+[![Angular](https://img.shields.io/badge/Angular-21-DD0031?logo=angular&logoColor=white)](https://angular.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![pnpm](https://img.shields.io/badge/pnpm-10.17.1-F69220?logo=pnpm&logoColor=white)](https://pnpm.io/)
+[![Auto Format](https://img.shields.io/github/actions/workflow/status/Aniol0012/random-wheel/auto-format-lint.yml?branch=master&label=Auto%20format)](https://github.com/Aniol0012/random-wheel/actions/workflows/auto-format-lint.yml)
+[![Deploy Pages](https://img.shields.io/github/actions/workflow/status/Aniol0012/random-wheel/deploy-pages.yml?branch=master&label=Deploy%20pages)](https://github.com/Aniol0012/random-wheel/actions/workflows/deploy-pages.yml)
 
-You add options, spin the wheel, and get a winner. It is built for quick use during standups, games, classroom picks, or any "pick one item" moment.
+Simple wheel picker built with Angular. Add options, spin, and get a random winner.
 
-## what it does
+- Repository: [github.com/Aniol0012/random-wheel](https://github.com/Aniol0012/random-wheel)
+- Local app: [http://localhost:4200/](http://localhost:4200/)
+- GitHub Pages: [aniol0012.github.io/random-wheel](https://aniol0012.github.io/random-wheel/)
 
-- Add, edit, recolor, shuffle, and remove options.
-- Spin the wheel with configurable duration.
-- Optional "remove winner" mode to avoid repeats.
-- Optional confetti when a winner is selected.
-- Fullscreen mode for presentations.
-- UI in Catalan, Spanish, and English.
-- Saves state in local storage and auto-clears options after inactivity.
+## Features
 
-## tech stack
+- Add, edit, recolor, shuffle, and remove options
+- Configurable spin duration
+- Optional "Remove winner" mode
+- Optional confetti
+- Fullscreen mode
+- UI in Catalan, Spanish, and English
 
-- Angular 21
-- TypeScript
-- pnpm
-
-## quick start
+## Quick Start
 
 ```bash
 pnpm install
 pnpm start
 ```
 
-Then open `http://localhost:4200/`.
+Open [http://localhost:4200/](http://localhost:4200/) in your browser.
 
-## available scripts
+## Scripts
 
 ```bash
 pnpm start
 pnpm build
-pnpm watch
 pnpm test
 pnpm lint
 pnpm lint-fix
 pnpm format
 ```
 
-Notes:
-- `lint-fix` tries `ng lint --fix` and falls back to `ng lint` if `--fix` is not supported.
-- `format` runs Prettier on `ts/html/css/scss/json/md` files.
+- `pnpm lint`: checks formatting with Prettier
+- `pnpm lint-fix`: applies Prettier fixes
 
-## i18n
+## CI And Deploy
 
-Translations live in:
+- Auto format workflow: [`.github/workflows/auto-format-lint.yml`](.github/workflows/auto-format-lint.yml)
+- GitHub Pages deploy workflow: [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml)
 
-- `src/app/i18n/locales/ca.json`
-- `src/app/i18n/locales/es.json`
-- `src/app/i18n/locales/en.json`
-
-The app switches language from the header buttons and resolves labels via `src/app/i18n/app-texts.ts`.
-
-## state and behavior
-
-- App state is stored in browser local storage (`random-wheel-state-v2`).
-- If there is no activity for 20 minutes, stored options are cleared.
-- If the user has reduced motion enabled, spin animation duration is shortened.
-
-Core logic is in `src/app/app.ts`.
-
-## deploy to github pages
-
-This repo includes a GitHub Actions deploy workflow:
-
-- `.github/workflows/deploy-pages.yml`
-
-It builds and publishes `dist/random-wheel/browser`.
-
-Current build command in CI:
-
-```bash
-pnpm ng build --configuration production --base-href /random-wheel/
-```
-
-If you rename the repository, update the `--base-href` value in that workflow.
-
-## auto format and lint in ci
-
-This repo also includes:
-
-- `.github/workflows/auto-format-lint.yml`
-
-On push, it runs formatting and lint autofix, then commits fixes back when needed.
-
-## project structure
-
-- `src/app/app.ts`: state, spinning logic, persistence, language handling.
-- `src/app/components/wheel-stage`: wheel rendering and spin interaction.
-- `src/app/components/options-editor`: option list editor.
-- `.github/workflows`: CI formatting/lint and GitHub Pages deploy.
-
-## development notes
-
-- Package manager is pinned in `package.json` (`pnpm@10.17.1`).
-- This project includes SSR entry files (`src/main.server.ts`, `src/server.ts`).
-- Production browser output is generated under `dist/random-wheel/browser`.
+The Pages build publishes `dist/random-wheel/browser`.

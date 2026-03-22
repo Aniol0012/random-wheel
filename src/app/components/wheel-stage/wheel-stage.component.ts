@@ -27,7 +27,7 @@ type ConfettiPiece = {
   selector: 'app-wheel-stage',
   templateUrl: './wheel-stage.component.html',
   styleUrl: './wheel-stage.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WheelStageComponent {
   readonly options = input.required<readonly WheelOption[]>();
@@ -70,7 +70,7 @@ export class WheelStageComponent {
         path: this.createSlicePath(startAngle, endAngle),
         labelX,
         labelY,
-        labelRotation: centerAngle + 90,
+        labelRotation: centerAngle + 90
       };
     });
   });
@@ -102,12 +102,7 @@ export class WheelStageComponent {
     const end = this.polarToCartesian(100, 100, 95, endAngle);
     const largeArcFlag = endAngle - startAngle > 180 ? 1 : 0;
 
-    return [
-      'M 100 100',
-      `L ${start.x} ${start.y}`,
-      `A 95 95 0 ${largeArcFlag} 1 ${end.x} ${end.y}`,
-      'Z',
-    ].join(' ');
+    return ['M 100 100', `L ${start.x} ${start.y}`, `A 95 95 0 ${largeArcFlag} 1 ${end.x} ${end.y}`, 'Z'].join(' ');
   }
 
   private polarToCartesian(
@@ -120,7 +115,7 @@ export class WheelStageComponent {
 
     return {
       x: centerX + radius * Math.cos(angleInRadians),
-      y: centerY + radius * Math.sin(angleInRadians),
+      y: centerY + radius * Math.sin(angleInRadians)
     };
   }
 
