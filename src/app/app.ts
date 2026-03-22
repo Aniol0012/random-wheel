@@ -32,6 +32,8 @@ type ConfettiPiece = {
 const STORAGE_KEY = 'random-wheel-state-v2';
 const INACTIVITY_LIMIT_MS = 20 * 60 * 1000;
 const DEFAULT_LANGUAGE: LanguageCode = 'ca';
+const WHEEL_START_ANGLE_DEG = -90;
+const POINTER_ANGLE_DEG = -90;
 const DEFAULT_SETTINGS: WheelSettings = {
   spinDurationSeconds: 4,
   spinTurns: 6,
@@ -264,7 +266,9 @@ export class App {
     }
 
     this.spinTimeoutId = setTimeout(() => {
-      const winner = this.options()[winnerIndex] ?? null;
+      const currentOptions = this.options();
+      const resolvedWinnerIndex = this.resolveWinnerIndexAtPointer(currentOptions.length, this.rotation());
+      const winner = resolvedWinnerIndex === null ? null : currentOptions[resolvedWinnerIndex] ?? null;
       this.isSpinning.set(false);
 
       if (!winner) {
@@ -325,11 +329,27 @@ export class App {
 
   private calculateTargetRotation(winnerIndex: number, anglePerSlice: number): number {
     const currentRotation = this.rotation();
-    const normalizedRotation = ((currentRotation % 360) + 360) % 360;
-    const targetNormalized = (270 - (winnerIndex * anglePerSlice + anglePerSlice / 2) + 360) % 360;
+    const normalizedRotation = this.normalizeAngle(currentRotation);
+    const winnerCenterAngle = WHEEL_START_ANGLE_DEG + winnerIndex * anglePerSlice + anglePerSlice / 2;
+    const targetNormalized = this.normalizeAngle(POINTER_ANGLE_DEG - winnerCenterAngle);
     const delta = (targetNormalized - normalizedRotation + 360) % 360;
 
     return currentRotation + this.settings().spinTurns * 360 + delta;
+  }
+
+  private resolveWinnerIndexAtPointer(optionCount: number, rotation: number): number | null {
+    if (optionCount < 1) {
+      return null;
+    }
+
+    const anglePerSlice = 360 / optionCount;
+    const pointerAngleInWheelSpace = this.normalizeAngle(POINTER_ANGLE_DEG - (WHEEL_START_ANGLE_DEG + rotation));
+
+    return Math.floor(pointerAngleInWheelSpace / anglePerSlice) % optionCount;
+  }
+
+  private normalizeAngle(angle: number): number {
+    return ((angle % 360) + 360) % 360;
   }
 
   private resolveSpinDuration(): number {
@@ -343,8 +363,9 @@ export class App {
   }
 
   private loadState(): StoredWheelState {
+    const browserLanguage = this.detectBrowserLanguage();
     const fallbackState: StoredWheelState = {
-      language: DEFAULT_LANGUAGE,
+      language: browserLanguage,
       settings: DEFAULT_SETTINGS,
       options: [],
       lastInteractionAt: Date.now()
@@ -370,7 +391,7 @@ export class App {
       const lastInteractionAt = typeof parsed.lastInteractionAt === 'number' ? parsed.lastInteractionAt : Date.now();
 
       return {
-        language: this.parseLanguage(parsed.language),
+        language: this.parseLanguage(parsed.language, browserLanguage),
         settings: this.parseSettings(parsed.settings),
         options: Date.now() - lastInteractionAt > INACTIVITY_LIMIT_MS ? [] : options,
         lastInteractionAt
@@ -380,8 +401,38 @@ export class App {
     }
   }
 
-  private parseLanguage(language: unknown): LanguageCode {
-    return language === 'es' || language === 'en' ? language : DEFAULT_LANGUAGE;
+  private parseLanguage(language: unknown, fallback: LanguageCode = DEFAULT_LANGUAGE): LanguageCode {
+    return this.toLanguageCode(language) ?? fallback;
+  }
+
+  private detectBrowserLanguage(): LanguageCode {
+    if (!this.isBrowser) {
+      return DEFAULT_LANGUAGE;
+    }
+
+    const languageCandidates = [...(navigator.languages ?? []), navigator.language];
+
+    for (const candidate of languageCandidates) {
+      const languageCode = this.toLanguageCode(candidate);
+      if (languageCode) {
+        return languageCode;
+      }
+    }
+
+    return DEFAULT_LANGUAGE;
+  }
+
+  private toLanguageCode(language: unknown): LanguageCode | null {
+    if (typeof language !== 'string') {
+      return null;
+    }
+
+    const normalized = language.toLowerCase().split('-')[0];
+    if (normalized === 'ca' || normalized === 'es' || normalized === 'en') {
+      return normalized;
+    }
+
+    return null;
   }
 
   private parseSettings(settings: unknown): WheelSettings {

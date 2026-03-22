@@ -98,8 +98,9 @@
 }
 
 .delete-button svg {
-  width: 1.15rem;
-  height: 1.15rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  fill: currentColor;
 }
 
 .sr-only {

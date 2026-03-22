@@ -23,7 +23,6 @@ Simple wheel picker built with Angular. Add options, spin, and get a random winn
 
 <img width="1877" height="1236" alt="image" src="https://github.com/user-attachments/assets/23d2cd35-51af-412f-ab2e-479532458b6c" />
 
-
 ## Quick Start
 
 ```bash

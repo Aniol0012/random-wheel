@@ -45,12 +45,6 @@ input {
   gap: 0.7rem;
 }
 
-.brand-mark {
-  width: 2.9rem;
-  height: 2.9rem;
-  border-radius: 1rem;
-}
-
 .language-switcher {
   display: flex;
   gap: 0.45rem;
@@ -77,8 +71,27 @@ input {
     transform 140ms ease;
 }
 
+.repo-link {
+  min-height: 2.8rem;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d9d9de;
+  border-radius: 999px;
+  background: #fbfbfd;
+  color: #1d1d1f;
+  text-decoration: none;
+  font-weight: 700;
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease,
+    transform 140ms ease;
+}
+
 .language-button:hover,
-.secondary-button:hover {
+.secondary-button:hover,
+.repo-link:hover {
   transform: translateY(-1px);
 }
 
@@ -116,6 +129,8 @@ input {
   margin: 0;
   font-size: 1.05rem;
   letter-spacing: -0.03em;
+  font-weight: 800;
+  color: #1d1d1f;
 }
 
 .advanced-note {
@@ -132,7 +147,7 @@ input {
 }
 
 .options-summary {
-  margin-top: 0.85rem;
+  margin: 0.85rem;
   color: #6e6e73;
 }
 
@@ -255,8 +270,8 @@ input {
 }
 
 .icon-link {
-  width: 2.75rem;
-  height: 2.75rem;
+  width: 3rem;
+  height: 3rem;
   display: inline-grid;
   place-items: center;
   border-radius: 999px;
@@ -269,8 +284,8 @@ input {
 }
 
 .icon-link svg {
-  width: 1.18rem;
-  height: 1.18rem;
+  width: 1.8rem;
+  height: 1.8rem;
   fill: currentColor;
 }
 
@@ -278,7 +293,8 @@ input {
 .secondary-button:focus-visible,
 .range-input:focus-visible,
 .toggle-row input:focus-visible,
-.icon-link:focus-visible {
+.icon-link:focus-visible,
+.repo-link:focus-visible {
   outline: 3px solid rgba(142, 142, 147, 0.35);
   outline-offset: 2px;
 }
