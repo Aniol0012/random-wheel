@@ -1,16 +1,21 @@
 <section class="wheel-section">
+  <div class="wheel-copy" aria-live="polite">
+    <p class="wheel-result">{{ resultText() }}</p>
+    <p class="wheel-status">{{ statusText() }}</p>
+  </div>
+
   <div class="wheel-frame">
     <div class="pointer" aria-hidden="true"></div>
 
     <div
       class="wheel-touch-area"
-      [class.is-clickable]="wheelIsInteractive()"
       [class.is-disabled]="!canSpin()"
-      [attr.role]="wheelIsInteractive() ? 'button' : null"
-      [attr.tabindex]="wheelIsInteractive() ? 0 : null"
+      [class.is-spinning]="isSpinning()"
+      [attr.role]="'button'"
+      [attr.tabindex]="0"
       [attr.aria-disabled]="!canSpin()"
       [attr.aria-label]="wheelAriaLabel()"
-      (click)="wheelIsInteractive() ? requestSpin() : null"
+      (click)="requestSpin()"
       (keydown)="onWheelKeydown($event)"
     >
       @if (slices().length > 0) {
@@ -47,18 +52,30 @@
         <div class="wheel-empty">{{ emptyLabel() }}</div>
       }
     </div>
+
+    <button
+      class="fullscreen-button"
+      type="button"
+      [attr.aria-label]="fullscreenLabel()"
+      [class.is-active]="isFullscreen()"
+      (click)="requestFullscreen($event)"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          d="M7 3H4a1 1 0 0 0-1 1v3h2V5h2V3Zm14 1a1 1 0 0 0-1-1h-3v2h2v2h2V4ZM5 17H3v3a1 1 0 0 0 1 1h3v-2H5v-2Zm16 0h-2v2h-2v2h3a1 1 0 0 0 1-1v-3Z"
+        />
+      </svg>
+    </button>
   </div>
 
   <p class="wheel-hint">{{ hintText() }}</p>
 
-  @if (showButton()) {
-    <button
-      class="spin-button"
-      type="button"
-      [disabled]="!canSpin()"
-      (click)="requestSpin()"
-    >
-      {{ isSpinning() ? spinningLabel() : spinLabel() }}
-    </button>
-  }
+  <button
+    class="spin-button"
+    type="button"
+    [disabled]="!canSpin()"
+    (click)="requestSpin()"
+  >
+    {{ isSpinning() ? spinningLabel() : spinLabel() }}
+  </button>
 </section>

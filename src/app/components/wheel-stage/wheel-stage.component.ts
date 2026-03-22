@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 
-import type { SpinTriggerMode, WheelOption } from '../../types/wheel.types';
+import type { WheelOption } from '../../types/wheel.types';
 
 type WheelSlice = {
   readonly id: string;
@@ -24,14 +24,18 @@ export class WheelStageComponent {
   readonly durationSeconds = input(4);
   readonly canSpin = input(false);
   readonly isSpinning = input(false);
-  readonly spinMode = input<SpinTriggerMode>('button');
   readonly spinLabel = input.required<string>();
   readonly spinningLabel = input.required<string>();
   readonly emptyLabel = input.required<string>();
   readonly wheelAriaLabel = input.required<string>();
   readonly hintText = input.required<string>();
+  readonly resultText = input.required<string>();
+  readonly statusText = input.required<string>();
+  readonly isFullscreen = input(false);
+  readonly fullscreenLabel = input.required<string>();
 
   readonly spinRequested = output<void>();
+  readonly fullscreenRequested = output<void>();
 
   protected readonly slices = computed<readonly WheelSlice[]>(() => {
     const options = this.options();
@@ -60,16 +64,6 @@ export class WheelStageComponent {
     });
   });
 
-  protected readonly showButton = computed(() => {
-    const spinMode = this.spinMode();
-    return spinMode === 'button' || spinMode === 'both';
-  });
-
-  protected readonly wheelIsInteractive = computed(() => {
-    const spinMode = this.spinMode();
-    return spinMode === 'wheel' || spinMode === 'both';
-  });
-
   protected requestSpin(): void {
     if (!this.canSpin()) {
       return;
@@ -79,16 +73,17 @@ export class WheelStageComponent {
   }
 
   protected onWheelKeydown(event: KeyboardEvent): void {
-    if (!this.wheelIsInteractive()) {
-      return;
-    }
-
     if (event.key !== 'Enter' && event.key !== ' ') {
       return;
     }
 
     event.preventDefault();
     this.requestSpin();
+  }
+
+  protected requestFullscreen(event: Event): void {
+    event.stopPropagation();
+    this.fullscreenRequested.emit();
   }
 
   private createSlicePath(startAngle: number, endAngle: number): string {

@@ -16,7 +16,6 @@ import { WheelStageComponent } from './components/wheel-stage/wheel-stage.compon
 import { APP_TEXTS } from './i18n/app-texts';
 import type {
   LanguageCode,
-  SpinTriggerMode,
   StoredWheelState,
   WheelOption,
   WheelSettings,
@@ -39,17 +38,16 @@ const DEFAULT_SETTINGS: WheelSettings = {
   spinDurationSeconds: 4,
   spinTurns: 6,
   removeWinner: false,
-  spinTrigger: 'button',
 };
 const DEFAULT_OPTION_COLORS = [
-  '#6ea68d',
-  '#5b8e9e',
-  '#8c6c8f',
-  '#d99b66',
-  '#c96f6f',
-  '#7c93b2',
-  '#b8a15d',
-  '#5f7d6b',
+  '#34c759',
+  '#30b0c7',
+  '#ff9f0a',
+  '#ff375f',
+  '#5856d6',
+  '#64d2ff',
+  '#ffd60a',
+  '#8e8e93',
 ];
 
 @Component({
@@ -83,20 +81,7 @@ export class App {
   protected readonly canSpin = computed(
     () => this.options().length > 1 && !this.isSpinning()
   );
-  protected readonly hintText = computed(() => {
-    const texts = this.texts();
-    const spinTrigger = this.settings().spinTrigger;
-
-    if (spinTrigger === 'wheel') {
-      return texts.wheelClickHint;
-    }
-
-    if (spinTrigger === 'both') {
-      return texts.wheelBothHint;
-    }
-
-    return texts.wheelButtonHint;
-  });
+  protected readonly hintText = computed(() => this.texts().wheelHint);
   protected readonly statusMessage = computed(() => {
     const texts = this.texts();
     const announcement = this.announcement();
@@ -105,7 +90,7 @@ export class App {
       case 'spinning':
         return texts.statusSpinning;
       case 'winner':
-        return announcement.label;
+        return texts.statusIdle;
       case 'added':
         return this.formatAddedMessage(announcement.count);
       case 'cleared':
@@ -123,6 +108,20 @@ export class App {
   protected readonly optionCountLabel = computed(() =>
     this.formatOptionCount(this.options().length)
   );
+  protected readonly resultLabel = computed(() => {
+    const selectedOption = this.selectedOption();
+    if (selectedOption) {
+      return selectedOption.label;
+    }
+
+    if (this.isSpinning()) {
+      return this.texts().spinning;
+    }
+
+    return this.options().length > 1
+      ? this.texts().resultIdle
+      : this.texts().resultEmpty;
+  });
 
   constructor() {
     effect(() => {
@@ -258,14 +257,6 @@ export class App {
     this.registerInteraction();
   }
 
-  protected setSpinTrigger(spinTrigger: SpinTriggerMode): void {
-    this.settings.update((currentSettings) => ({
-      ...currentSettings,
-      spinTrigger,
-    }));
-    this.registerInteraction();
-  }
-
   protected setRemoveWinner(removeWinner: boolean): void {
     this.settings.update((currentSettings) => ({
       ...currentSettings,
@@ -362,7 +353,7 @@ export class App {
     const currentRotation = this.rotation();
     const normalizedRotation = ((currentRotation % 360) + 360) % 360;
     const targetNormalized =
-      (360 - (winnerIndex * anglePerSlice + anglePerSlice / 2)) % 360;
+      (270 - (winnerIndex * anglePerSlice + anglePerSlice / 2) + 360) % 360;
     const delta = (targetNormalized - normalizedRotation + 360) % 360;
 
     return currentRotation + this.settings().spinTurns * 360 + delta;
@@ -446,12 +437,6 @@ export class App {
         typeof candidate.removeWinner === 'boolean'
           ? candidate.removeWinner
           : DEFAULT_SETTINGS.removeWinner,
-      spinTrigger:
-        candidate.spinTrigger === 'wheel' ||
-        candidate.spinTrigger === 'button' ||
-        candidate.spinTrigger === 'both'
-          ? candidate.spinTrigger
-          : DEFAULT_SETTINGS.spinTrigger,
     };
   }
 

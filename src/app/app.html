@@ -2,6 +2,7 @@
   <header class="page-header">
     <div class="brand-copy">
       <h1>{{ texts().appName }}</h1>
+      <p>{{ texts().appTagline }}</p>
     </div>
 
     <nav class="language-switcher" [attr.aria-label]="texts().languageLabel">
@@ -27,24 +28,18 @@
         [durationSeconds]="settings().spinDurationSeconds"
         [canSpin]="canSpin()"
         [isSpinning]="isSpinning()"
-        [spinMode]="settings().spinTrigger"
         [spinLabel]="texts().spin"
         [spinningLabel]="texts().spinning"
         [emptyLabel]="texts().wheelEmpty"
         [wheelAriaLabel]="texts().wheelAriaLabel"
         [hintText]="hintText()"
+        [resultText]="resultLabel()"
+        [statusText]="statusMessage()"
+        [isFullscreen]="isFullscreen()"
+        [fullscreenLabel]="isFullscreen() ? texts().fullscreenExit : texts().fullscreenEnter"
         (spinRequested)="spinWheel()"
+        (fullscreenRequested)="toggleFullscreen()"
       />
-
-      <section class="result-strip" aria-live="polite">
-        <p class="eyebrow">{{ texts().resultTitle }}</p>
-        @if (selectedOption(); as winner) {
-          <p class="result-value">{{ winner.label }}</p>
-        } @else {
-          <p class="result-value is-muted">{{ texts().resultEmpty }}</p>
-        }
-        <p class="result-message">{{ statusMessage() }}</p>
-      </section>
     </div>
 
     <div class="tools-column">
@@ -70,43 +65,6 @@
             (input)="updateDuration(durationInput.value)"
           />
         </div>
-
-        <div class="setting-group">
-          <p class="setting-label">{{ texts().spinModeLabel }}</p>
-          <div class="segmented-buttons" role="group" [attr.aria-label]="texts().spinModeLabel">
-            <button
-              class="segment-button"
-              type="button"
-              [class.is-active]="settings().spinTrigger === 'wheel'"
-              [attr.aria-pressed]="settings().spinTrigger === 'wheel'"
-              (click)="setSpinTrigger('wheel')"
-            >
-              {{ texts().spinModeWheel }}
-            </button>
-            <button
-              class="segment-button"
-              type="button"
-              [class.is-active]="settings().spinTrigger === 'button'"
-              [attr.aria-pressed]="settings().spinTrigger === 'button'"
-              (click)="setSpinTrigger('button')"
-            >
-              {{ texts().spinModeButton }}
-            </button>
-            <button
-              class="segment-button"
-              type="button"
-              [class.is-active]="settings().spinTrigger === 'both'"
-              [attr.aria-pressed]="settings().spinTrigger === 'both'"
-              (click)="setSpinTrigger('both')"
-            >
-              {{ texts().spinModeBoth }}
-            </button>
-          </div>
-        </div>
-
-        <button class="secondary-button" type="button" (click)="toggleFullscreen()">
-          {{ isFullscreen() ? texts().fullscreenExit : texts().fullscreenEnter }}
-        </button>
       </section>
 
       <section class="section-block">
@@ -119,7 +77,6 @@
 
         <app-options-editor
           [options]="options()"
-          [inputLabel]="texts().newOptionLabel"
           [placeholder]="texts().newOptionPlaceholder"
           [addButtonLabel]="texts().addOption"
           [colorLabel]="texts().colorLabel"
@@ -132,10 +89,10 @@
         />
 
         <div class="action-row">
-          <button class="secondary-button" type="button" (click)="shuffleOptions()">
+          <button class="secondary-button shuffle" type="button" (click)="shuffleOptions()">
             {{ texts().shuffle }}
           </button>
-          <button class="secondary-button" type="button" (click)="resetWorkspace()">
+          <button class="secondary-button reset" type="button" (click)="resetWorkspace()">
             {{ texts().reset }}
           </button>
           <button class="secondary-button danger" type="button" (click)="clearOptions()">
@@ -165,11 +122,17 @@
   <footer class="page-footer">
     <p>{{ texts().footerCredits }}</p>
     <a
+      class="icon-link"
       href="https://github.com/Aniol0012/random-wheel"
       target="_blank"
       rel="noopener"
+      [attr.aria-label]="texts().footerProject"
     >
-      {{ texts().footerProject }}
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          d="M12 2C6.48 2 2 6.58 2 12.23c0 4.52 2.87 8.36 6.84 9.71.5.1.68-.22.68-.49 0-.24-.01-1.05-.01-1.91-2.78.62-3.37-1.2-3.37-1.2-.46-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.63.07-.63 1 .08 1.53 1.06 1.53 1.06.9 1.58 2.35 1.12 2.92.86.09-.67.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.09 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.31.1-2.73 0 0 .84-.28 2.75 1.05A9.31 9.31 0 0 1 12 6.84c.85 0 1.71.12 2.5.35 1.9-1.33 2.74-1.05 2.74-1.05.56 1.42.21 2.47.1 2.73.64.72 1.03 1.63 1.03 2.75 0 3.96-2.34 4.82-4.57 5.08.36.32.68.96.68 1.94 0 1.4-.01 2.54-.01 2.89 0 .27.18.59.69.49A10.27 10.27 0 0 0 22 12.23C22 6.58 17.52 2 12 2Z"
+        />
+      </svg>
     </a>
   </footer>
 </main>

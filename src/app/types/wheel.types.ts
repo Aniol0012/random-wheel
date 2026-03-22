@@ -1,7 +1,5 @@
 export type LanguageCode = 'ca' | 'es' | 'en';
 
-export type SpinTriggerMode = 'wheel' | 'button' | 'both';
-
 export type WheelOption = {
   readonly id: string;
   readonly label: string;
@@ -12,7 +10,6 @@ export type WheelSettings = {
   readonly spinDurationSeconds: number;
   readonly spinTurns: number;
   readonly removeWinner: boolean;
-  readonly spinTrigger: SpinTriggerMode;
 };
 
 export type StoredWheelState = {
@@ -24,21 +21,19 @@ export type StoredWheelState = {
 
 export type UiTextSet = {
   readonly appName: string;
+  readonly appTagline: string;
   readonly languageLabel: string;
   readonly wheelAriaLabel: string;
   readonly wheelEmpty: string;
-  readonly wheelClickHint: string;
-  readonly wheelButtonHint: string;
-  readonly wheelBothHint: string;
+  readonly wheelHint: string;
   readonly spin: string;
   readonly spinning: string;
   readonly fullscreenEnter: string;
   readonly fullscreenExit: string;
-  readonly resultTitle: string;
+  readonly resultIdle: string;
   readonly resultEmpty: string;
   readonly optionsTitle: string;
   readonly optionsHint: string;
-  readonly newOptionLabel: string;
   readonly newOptionPlaceholder: string;
   readonly addOption: string;
   readonly shuffle: string;
@@ -49,10 +44,6 @@ export type UiTextSet = {
   readonly deleteLabel: string;
   readonly quickSettingsTitle: string;
   readonly durationLabel: string;
-  readonly spinModeLabel: string;
-  readonly spinModeWheel: string;
-  readonly spinModeButton: string;
-  readonly spinModeBoth: string;
   readonly advancedTitle: string;
   readonly removeWinner: string;
   readonly cleanupHint: string;

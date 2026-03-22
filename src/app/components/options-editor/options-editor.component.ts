@@ -10,7 +10,6 @@ import type { WheelOption } from '../../types/wheel.types';
 })
 export class OptionsEditorComponent {
   readonly options = input.required<readonly WheelOption[]>();
-  readonly inputLabel = input.required<string>();
   readonly placeholder = input.required<string>();
   readonly addButtonLabel = input.required<string>();
   readonly colorLabel = input.required<string>();
