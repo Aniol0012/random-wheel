@@ -41,7 +41,16 @@ const DEFAULT_SETTINGS: WheelSettings = {
   removeWinner: false,
   showConfetti: true
 };
-const DEFAULT_OPTION_COLORS: string[] = ['#f39b93', '#f6c86f', '#8fd39b', '#7dc5ee', '#b29af3', '#f29fc7', '#72d0c3', '#9bb4ff'];
+const DEFAULT_OPTION_COLORS: string[] = [
+  '#f39b93',
+  '#f6c86f',
+  '#8fd39b',
+  '#7dc5ee',
+  '#b29af3',
+  '#f29fc7',
+  '#72d0c3',
+  '#9bb4ff'
+];
 
 @Component({
   selector: 'app-root',
